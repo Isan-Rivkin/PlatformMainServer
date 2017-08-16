@@ -12,10 +12,10 @@ namespace networkingLab {
 Listener::~Listener()
 {
 }
-networkingLab::Listener::Listener(size_t port,HandlerManager * oHandler):
-		handler(oHandler),keepRunning(false)
+networkingLab::Listener::Listener(size_t port,HandlerManager * oHandler)
+	:handler(oHandler),keepRunning(false),_first_LandR(true),_second_match(false)
 {
-	this->listenerSocket = new TCPSocket(port);
+	this->listenerSocket = new User(port);
 	port_listener = port;
 }
 
@@ -27,9 +27,28 @@ void networkingLab::Listener::run()
 
 		while(keepRunning)
 		{
-			TCPSocket * peer = listenerSocket->accept();
-			cout <<"[Listener:] new connection"<<endl;
-			this->handler->update(peer);
+			if(_first_LandR)
+			{
+				TCPSocket * peer = listenerSocket->accept();
+				cout <<"[Listener:] Authentication interrupter plugged."<<endl;
+				this->handler->update(peer,LISTEN_ID,ROUTE_TO_AUTH);
+				_first_LandR = false;
+				_second_match = true;
+			}
+			else if(_second_match)
+			{
+
+				TCPSocket * peer = listenerSocket->accept();
+				cout <<"[Listener:] Matcher interrupter plugged."<<endl;
+				this->handler->update(peer,LISTEN_ID,ROUTE_TO_MATCH);
+				_second_match = false;
+			}
+			else
+			{
+				TCPSocket * peer = listenerSocket->accept();
+				cout <<"[Listener:] new connection"<<endl;
+				this->handler->update(peer,LISTEN_ID,ROUTE_TO_AUTH);
+			}
 		}
 }
 

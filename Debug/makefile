@@ -8,6 +8,10 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/SDKUtils/subdir.mk
+-include src/Matching/subdir.mk
+-include src/LAndR/subdir.mk
+-include src/DB/subdir.mk
 -include src/subdir.mk
 -include subdir.mk
 -include objects.mk

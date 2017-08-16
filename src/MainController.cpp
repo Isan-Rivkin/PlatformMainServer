@@ -9,10 +9,12 @@
 
 namespace networkingLab {
 
-MainController::MainController(size_t port):
-		listener_port(port)
+MainController::MainController(size_t listener_port):
+		listener_port(listener_port)
 {
+	matcher = NULL;
 	listener = NULL;
+	authenthicator = NULL;
 }
 
 MainController::~MainController() {
@@ -26,17 +28,76 @@ void MainController::update(const string& query)
 	cout <<"Main Controller: " << query <<endl;
 }
 
-void MainController::update(const TCPSocket* peer) {
+void MainController::update(TCPSocket * peer, int protocol_id, int protocol_specific=-1)
+{
+	int flag = 0;
+	switch(protocol_id)
+	{
+	case AUTH_ID:
+	{
+		matcher->handle(peer);
+		flag =1;
+		break;
+	}
+	case LISTEN_ID:
+	{
+		switch(protocol_specific)
+		{
+			case ROUTE_TO_AUTH:
+			{
+				authenthicator->handle(peer);
+				break;
+			}
+			case ROUTE_TO_MATCH:
+			{
+				matcher->handle(peer);
+				break;
+			}
+		}
+		break;
+	}
+	}
 }
 
-void MainController::start()
+void MainController::startController()
 {
-	listener->start();
-	listener->waitForThread();
-	cout <<"[MainController:] listener thread has died." << endl;
+	this->start();
+}
+
+void MainController::generateListenerInterrupter()
+{
+	TCPSocket * interrupter = new TCPSocket(SERVER_IP,listener_port);
+	authenthicator->setInterrupter(interrupter);
+}
+
+void MainController::generateMatcherInterrupter()
+{
+	TCPSocket * interrupter = new TCPSocket(SERVER_IP,listener_port);
+	matcher->setInterrupter(interrupter);
+}
+
+void MainController::initAuthenthicator(AuthManager* oAuthenthicator)
+{
+	this->authenthicator = oAuthenthicator;
+}
+
+void MainController::initMatcher(MatchingManager* oManager)
+{
+	this->matcher = oManager;
 }
 
 void MainController::stop() {
+}
+
+void MainController::run() {
+		listener->start();
+		sleep(0.5);
+		generateListenerInterrupter();
+		generateMatcherInterrupter();
+		listener->waitForThread();
+		authenthicator->waitForThread();
+		matcher->waitForThread();
+		cout <<"[MainController:] XXX listener/authenthicator thread has died. XXX" << endl;
 }
 
 } /* namespace networkingLab */
