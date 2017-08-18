@@ -62,7 +62,7 @@ public:
 	 * parse user name and password -> user_name:password
 	 * return: struct with both of them.
 	 */
-	virtual UserLoginDetails extractUserAuthDetails(const string& userDetails);
+	virtual UserLoginDetails extractUserAuthDetails(const string & userDetails);
 	/**
 	 * char * containins :
 	 * param1,param2, ... paramn
@@ -81,10 +81,15 @@ public:
 	  * generate random number
 	 */
 	 int generateRandom(int low_bound,int high_bound);
+	 int generateRandom(int low_bound,int high_bound,int seed);
 	 /**
 	  * cast size_t/int to string
 	  */
 	 string toString(size_t num);
+	 /**
+	  * prase MATCH_X_WITH_Y from name:port to struct
+	  */
+	 UserLoginDetails extractPeerDetails(const char * name_port)const;
 	 /**
 	  * read command from socket by protocol
 	  */
@@ -92,7 +97,15 @@ public:
 	 /**
 	  * read bufferd command followed after protocol command
 	  */
-	 const char* readBufferdCommand(TCPSocket * sock) const;
+	 char* readBufferdCommand(TCPSocket * sock, char * deletee) const;
+	 /**
+	  * extract client port given a name from list {name:ip:port/n...}
+	  */
+	 size_t getClientPortFromList(const string& client_name,const char* list,size_t len)const;
+	 /**
+	  * cast string number to size_t
+	  */
+	 size_t toSize(const string& number_str)const;
 };
 
 } /* namespace networkingLab */

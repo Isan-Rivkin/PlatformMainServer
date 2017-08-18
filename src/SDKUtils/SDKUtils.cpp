@@ -121,14 +121,20 @@ int SDKUtils::sendCommand(TCPSocket * socket,int cmd,const char* buff)
 	}
 int SDKUtils::generateRandom(int low_bound, int high_bound)
 {
+	return generateRandom(low_bound, high_bound,0);
+}
+int SDKUtils::generateRandom(int low_bound, int high_bound,int seed)
+{
 	int val;
 	 /* initialize random seed: */
+	if(seed==0)
 	  srand(time(NULL));
+	else
+	  srand(time(NULL)+seed);
 	  /* generate secret number between 1 and 10: */
 	  val = rand() % high_bound + low_bound;
 	  return val;
 }
-
 string SDKUtils::toString(size_t num)
 {
 	    std::stringstream ss;
@@ -151,19 +157,96 @@ int SDKUtils::readCommand(TCPSocket* sock) const
 			return -1;
 }
 
-const char* SDKUtils::readBufferdCommand(TCPSocket* sock) const
+UserLoginDetails SDKUtils::extractPeerDetails(const char * name_port)const
 {
-	char *buffer;
+
+	UserLoginDetails user;
+	string u_name="";
+	string u_port="";
+	size_t idx;
+	for(size_t i=0;i<strlen(name_port);++i)
+	{
+		if(name_port[i] == ':')
+		{
+			idx = i;
+			i = strlen(name_port);
+			break;
+		}
+	}
+	size_t i=0;
+	while(name_port[i] != ':')
+	{
+		u_name+=name_port[i];
+		i++;
+	}
+	i++;
+	while(i<strlen(name_port))
+	{
+		u_port+=name_port[i];
+		i++;
+	}
+	user.name = u_name;
+	std::istringstream iss(u_port);
+	size_t p;
+	iss >> p;
+	user.port = p;
+	return user;
+}
+
+char* SDKUtils::readBufferdCommand(TCPSocket* sock,char * deletee) const
+{
+	char * buffer;
 	int len;
 	sock->read((char*)&len, 4);
 	len=ntohl(len);
 	buffer = new char[len];
 	int bytes = sock->read(buffer, len);
 	buffer[bytes] = '\0';
+
 	return buffer;
 }
 
-} /* namespace networkingLab */
+size_t SDKUtils::getClientPortFromList(const string& client_name, const char* list,size_t len) const
+{
+	size_t count_delim=0;
+	string full_list_str="";
+	string str_port="";
+	for(size_t i=0;i<len;++i)
+	{
+		full_list_str +=list[i];
+	}
+	size_t nameIdx = full_list_str.find(client_name);
+	while(list[nameIdx] != '\n')
+	{
+		if(list[nameIdx] == ':')
+		{
+			count_delim++;
+			if(count_delim == 2)
+			{
+				count_delim++;
+				nameIdx++;
+				while(list[nameIdx] != '\n')
+				{
+					str_port+= list[nameIdx];
+					nameIdx++;
+				}
+				break;
+			}
+		}
+		nameIdx++;
+	}
+	return toSize(str_port);
+}
 
+
+size_t SDKUtils::toSize(const string& number_str) const
+{
+	std::istringstream iss(number_str);
+	size_t port;
+	iss >> port;
+	return port;
+}
+
+} /* namespace networkingLab */
 
 

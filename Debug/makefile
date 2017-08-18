@@ -12,6 +12,7 @@ RM := rm -rf
 -include src/Matching/subdir.mk
 -include src/LAndR/subdir.mk
 -include src/DB/subdir.mk
+-include src/BusyManagerModule/subdir.mk
 -include src/subdir.mk
 -include subdir.mk
 -include objects.mk

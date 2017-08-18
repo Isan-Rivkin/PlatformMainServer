@@ -16,7 +16,13 @@ src/MainController.o: ../src/MainController.cpp ../src/MainController.h \
  ../src/LAndR/../DB/../SDKUtils/SDKUtils.h ../src/LAndR/../DB/Entity.h \
  ../src/Matching/MatchingManager.h ../src/Matching/../HandlerManager.h \
  ../src/Matching/../Protocol.h ../src/Matching/../User.h \
- ../src/Matching/../SDKUtils/SDKUtils.h
+ ../src/Matching/../SDKUtils/SDKUtils.h \
+ ../src/BusyManagerModule/BusyManager.h \
+ ../src/BusyManagerModule/../HandlerManager.h \
+ ../src/BusyManagerModule/../Protocol.h \
+ ../src/BusyManagerModule/../User.h \
+ ../src/BusyManagerModule/../DB/AbstractDB.h \
+ ../src/BusyManagerModule/../SDKUtils/SDKUtils.h
 
 ../src/MainController.h:
 
@@ -75,3 +81,15 @@ src/MainController.o: ../src/MainController.cpp ../src/MainController.h \
 ../src/Matching/../User.h:
 
 ../src/Matching/../SDKUtils/SDKUtils.h:
+
+../src/BusyManagerModule/BusyManager.h:
+
+../src/BusyManagerModule/../HandlerManager.h:
+
+../src/BusyManagerModule/../Protocol.h:
+
+../src/BusyManagerModule/../User.h:
+
+../src/BusyManagerModule/../DB/AbstractDB.h:
+
+../src/BusyManagerModule/../SDKUtils/SDKUtils.h:

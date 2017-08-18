@@ -14,6 +14,7 @@
 #include "MThread.h"
 #include "User.h"
 #include "LAndR/AuthManager.h"
+#include "BusyManagerModule/BusyManager.h"
 #include "Matching/MatchingManager.h"
 #include "Protocol.h"
 // db includes
@@ -31,10 +32,11 @@
 #include <time.h>       /* time */
 
 
-#define TEST_PORT 91196
+#define TEST_PORT 14487
 
 using namespace std;
 using namespace networkingLab;
+static size_t MAIN_PORT=0;
 class LoginDBTester : public MThread
 {
 	File * file;
@@ -125,9 +127,9 @@ public:
 	}
 	void UtilsAndParsing()
 	{
-		SDKUtils utils;
-		UserLoginDetails details = utils.extractUserAuthDetails("ronen:123456");
-		cout << "username->"<<details.name<<"pwd->"<<details.password<<endl;
+//		SDKUtils utils;
+//		UserLoginDetails details = utils.extractUserAuthDetails("ronen:123456");
+//		cout << "username->"<<details.name<<"pwd->"<<details.password<<endl;
 	}
 	void UtilsDBtoVec()
 	{
@@ -150,19 +152,153 @@ class UsersTest : public MThread
 {	public:
 	SDKUtils utils;
 	string details;
-	virtual void run()
+	/**
+	 * connect 2 x,y
+	 * x asks random
+	 * server offers y to play
+	 * y ack
+	 * x accept the ack
+	 * x and y are passed to the busy.
+	 */
+	virtual void RunBusyLoginTest()
+	{
+
+		sleep(1.5);
+							TCPSocket * client_x = new User("127.0.0.1",MAIN_PORT);
+							details = "ronen:123456";
+							sleep(1.5);
+							sendCommand(client_x, AUTH_REQ_LOGIN, details.c_str());
+							sleep(2);
+							// connect y
+							TCPSocket * client_y = new User("127.0.0.1",MAIN_PORT);
+							sleep(1.5);
+							details ="haimke:123456";
+							sendCommand(client_y, AUTH_REQ_LOGIN, details.c_str());
+							sleep(2);
+							sendCommand(client_x, MATCH_RANDOM, NULL);
+							sleep(3);
+							// random t reads the offer :
+							int cmd = utils.readCommand(client_y);
+							char buffer[1000];
+							char * offer= utils.readBufferdCommand(client_y, buffer);
+							cout << "offer details |" <<offer<<"|"<<endl;
+							sleep(1);
+							cout << " sended ack " <<endl;
+							utils.sendCommand(client_y, MATCH_ACK_OFFER_TO_X, offer);
+							sleep(1.5);
+							// x reads the ack and details of the accepter
+							utils.readCommand(client_x);
+							char * b;
+							b = utils.readBufferdCommand(client_x, b);
+							cout << b << " has accepted to play with you ! "<<endl;
+
+	}
+	/**
+	 * connect 2 x and y
+	 * x asks random
+	 * server offers y to play
+	 * y nack/ack-.startSession
+	 */
+	virtual void RunRandomMatchTest()
 	{
 		sleep(1.5);
-		TCPSocket * client = new User("127.0.0.1",TEST_PORT);
-		sleep(1.5);
-		sendCommand(client, AUTH_REQ_LOGIN, details.c_str());
-		sleep(1.5);
-		sendCommand(client, MATCH_LIST, NULL);
-		int cmd = utils.readCommand(client);
-		cout <<"command " << cmd <<endl;
-		cout<<" list : "<<endl;
-		cout <<utils.readBufferdCommand(client)<<endl;;
+						TCPSocket * client_x = new User("127.0.0.1",MAIN_PORT);
+						details = "ronen:123456";
+						sleep(1.5);
+						sendCommand(client_x, AUTH_REQ_LOGIN, details.c_str());
+						sleep(2);
+						// connect y
+						TCPSocket * client_y = new User("127.0.0.1",MAIN_PORT);
+						sleep(1.5);
+						details ="haimke:123456";
+						sendCommand(client_y, AUTH_REQ_LOGIN, details.c_str());
+						sleep(2);
+						sendCommand(client_x, MATCH_RANDOM, NULL);
+						sleep(3);
+						// random t reads the offer :
+						int cmd = utils.readCommand(client_y);
+						char buffer[1000];
+						char * offer= utils.readBufferdCommand(client_y, buffer);
+						cout << "offer details |" <<offer<<"|"<<endl;
+						sleep(1);
+						cout << "sended nack " <<endl;
+						utils.sendCommand(client_y, MATCH_OFFER_NACK_REJECTED_, offer);
+						sleep(1.5);
+						int recived_nack = utils.readCommand(client_x);
+						if(recived_nack == MATCH_OFFER_NACK_REJECTED_)
+						{
+							cout << "User has rejected you ! :(" <<endl;
+						}
+//						cout << " sended ack " <<endl;
+//						utils.sendCommand(client_y, MATCH_ACK_OFFER_TO_X, offer);
+						sleep(1.5);
+						// x reads the ack and details of the accepter
+//						utils.readCommand(client_x);
+//						char * b;
+//						b = utils.readBufferdCommand(client_x, b);
+//						cout << b << " has accepted to play with you ! "<<endl;
 	}
+	// add 2 players
+	// x offer y to play
+	// y reads the offer and prints
+	virtual void runMatcherXOfferYTest()
+	{
+		// connect x
+			sleep(1.5);
+			TCPSocket * client_x = new User("127.0.0.1",MAIN_PORT);
+			details = "ronen:123456";
+			sleep(1.5);
+			sendCommand(client_x, AUTH_REQ_LOGIN, details.c_str());
+			sleep(2);
+			// connect y
+			TCPSocket * client_y = new User("127.0.0.1",MAIN_PORT);
+			sleep(1.5);
+			details ="haimke:123456";
+			sendCommand(client_y, AUTH_REQ_LOGIN, details.c_str());
+			sleep(1);
+			// ask for the players list :
+			utils.sendCommand(client_x, MATCH_LIST, NULL);
+			utils.readCommand(client_x);
+			char * b;
+			b = utils.readBufferdCommand(client_x, b);
+			cout << " LIST OF PLAYERS FROM THE SERVER: " <<endl;
+			cout<<b<<endl;
+			// x offer y to play
+			string y_details = details;
+			size_t haimkes_port =utils.getClientPortFromList("haimke", b, strlen(b));
+			y_details = "haimke:";
+			y_details+=utils.toString(haimkes_port);
+			utils.sendCommand(client_x, MATCH_MATCH_Y, y_details.c_str());
+			sleep(3);
+			// y prints the offer
+			int cmd2 = utils.readCommand(client_y);
+			char buffer[1000];
+			char * offer= utils.readBufferdCommand(client_y, buffer);
+			cout << "offer details |" <<offer<<"|"<<endl;
+			sleep(1);
+			cout << " sended ack " <<endl;
+			utils.sendCommand(client_y, MATCH_ACK_OFFER_TO_X, offer);
+			sleep(1.4);
+	}
+	virtual void run()
+	{
+		RunBusyLoginTest();
+	}
+//	virtual void run()
+//	{
+//		sleep(1.5);
+//		TCPSocket * client = new User("127.0.0.1",TEST_PORT);
+//		sleep(1.5);
+//		sendCommand(client, AUTH_REQ_LOGIN, details.c_str());
+//		sleep(1.5);
+//		string other = "666.666.666:12546";
+//		sendCommand(client, MATCH_MATCH_Y, other.c_str());
+//		int cmd = utils.readCommand(client);
+//		cout <<"command " << cmd <<endl;
+//		cout<<" list : "<<endl;
+//		char buffer[1000]
+//		cout <<utils.readBufferdCommand(client,buffer)<<endl;
+//	}
 	int sendCommand(TCPSocket * socket,int cmd,const char* buff)
 		{
 			int cmdNet = htonl(cmd);
@@ -278,22 +414,11 @@ bool runLoginTest()
 //	test.testAPI();
 	return true;
 }
+
 bool runMatcherTest()
 {
 	cout <<"staring test ---- " <<endl;
-
-	// server initialization
-	SDKUtils utils;
-	int p = utils.generateRandom(2000, 9000);
-	MainController * handler = new MainController(TEST_PORT);
-	Listener * listener = new Listener(TEST_PORT,handler);
-	BasicDB * db = new BasicDB("src/DB/config.txt");
-	AuthManager * authenticator = new AuthManager(handler,db);
-	MatchingManager * matcher = new MatchingManager(handler);
-	handler->initListener(listener);
-	handler->initAuthenthicator(authenticator);
-	handler->initMatcher(matcher);
-	handler->startController();
+	//initAllConfig();
 	// client 1
 	UsersTest * client = new UsersTest();
 	client->details="ronen:123456";
@@ -313,12 +438,42 @@ bool runMatcherTest()
 	return true;
 
 }
+bool initAllConfig()
+{
+	// server initialization
+	SDKUtils utils;
+	int p1 = utils.generateRandom(2500, 9000);
+	MAIN_PORT = (size_t)p1;
+	MainController * handler = new MainController(MAIN_PORT);
+	Listener * listener = new Listener(MAIN_PORT,handler);
+	BasicDB * db = new BasicDB("src/DB/config.txt");
+	AuthManager * authenticator = new AuthManager(handler,db);
+	MatchingManager * matcher = new MatchingManager(handler);
+	BasicDB * db_hs = new BasicDB("src/DB/hs_config.txt");
+	BusyManager * busy = new BusyManager(handler,db_hs);
+	handler->initListener(listener);
+	handler->initAuthenthicator(authenticator);
+	handler->initMatcher(matcher);
+	handler->initBusy(busy);
+	handler->startController();
+	return true;
+}
+bool runMatcherPeerTest()
+{
+
+	initAllConfig();
+	UsersTest * test = new UsersTest();
+	sleep(2);
+	test->run();
+	cout << " peer test has ended ------ >> " <<endl;
+	return 0;
+}
 int main()
 {
 	cout << "staring MAIN  test ---- > "<<endl;
 	//runLoginTest();
 	//runListenerTest();
-	runMatcherTest();
+	runMatcherPeerTest();
 	// cruacial so that main wont die.
 	sleep(25);
 	cout << "finished MAIN test ---- > "<<endl;

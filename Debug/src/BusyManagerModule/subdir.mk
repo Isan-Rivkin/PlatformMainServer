@@ -4,20 +4,20 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/SDKUtils/MiniHashMap.cpp \
-../src/SDKUtils/SDKUtils.cpp 
+../src/BusyManagerModule/BusyManager.cpp \
+../src/BusyManagerModule/HighScoresLogic.cpp 
 
 OBJS += \
-./src/SDKUtils/MiniHashMap.o \
-./src/SDKUtils/SDKUtils.o 
+./src/BusyManagerModule/BusyManager.o \
+./src/BusyManagerModule/HighScoresLogic.o 
 
 CPP_DEPS += \
-./src/SDKUtils/MiniHashMap.d \
-./src/SDKUtils/SDKUtils.d 
+./src/BusyManagerModule/BusyManager.d \
+./src/BusyManagerModule/HighScoresLogic.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-src/SDKUtils/%.o: ../src/SDKUtils/%.cpp
+src/BusyManagerModule/%.o: ../src/BusyManagerModule/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ -I"/home/user/Desktop/eclipse_ws_eliav/lab32/Utils/src" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"

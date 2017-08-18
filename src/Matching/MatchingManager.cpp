@@ -36,8 +36,9 @@ void MatchingManager::run()
 					{
 						User* tryUser = dynamic_cast<User*>(userInQueue);
 						UserLoginDetails details = tryUser->getUserDetails();
+						details.ip = inet_ntoa(peer->getRemoteDescriptor().sin_addr);
 						user_list.push_back(details);
-						cout << "[Matcher:] New Player: "<<details.name <<endl;
+//						cout << "[Matcher:] New Player: "<<details.name <<endl;
 						multipleListener->addSocket(userInQueue);
 						break;
 					}
@@ -55,12 +56,179 @@ void MatchingManager::run()
 					}
 					case MATCH_MATCH_Y:
 					{
-						utils.readBufferdCommand(peer);
+						char* buff;
+						buff = utils.readBufferdCommand(peer,buff);
+						User * tryPlayer = dynamic_cast<User*>(peer);
+						UserLoginDetails player_x_det = tryPlayer->getUserDetails();
+						UserLoginDetails player_y_det = utils.extractPeerDetails(buff);
+						vector<TCPSocket*> list =multipleListener->getAll();
+						vector<TCPSocket*>::iterator socket_it= list.begin();
+						User * u=NULL;
+						while(socket_it != list.end())
+						{
+							u = dynamic_cast<User*>((*socket_it));
+							if(u != NULL)
+							{
+								UserLoginDetails dets = u->getUserDetails();
+								if(dets.name == player_y_det.name && dets.port == player_y_det.port)
+								{
+									break;
+								}
+							}
+							socket_it++;
+						}
+						// send offer message
+						// requester = {name:port}
+						if(u!= NULL)
+						{
+							string x_details_str = player_x_det.name + ":";
+							x_details_str+=utils.toString(player_x_det.port);
+							// parse player_x_det to char * and send
+							utils.sendCommand(u, MATCH_OFFER_FROM_X, x_details_str.c_str());
+							// done until for the ack msg from the player Y
+						}
 						break;
 					}
 					case MATCH_RANDOM:
 					{
+						/**
+						 * x ask random
+						 * find random != x
+						 * send request with x's data
+						 */
+						User* tryUser = dynamic_cast<User*>(peer);
+						UserLoginDetails x_player = tryUser->getUserDetails();
+						UserLoginDetails rand_player_details;
+						vector<TCPSocket*> _sockets = multipleListener->getAll();
+						int low =0,high= _sockets.size()-1;
+						User * rand_user = NULL;
+						int _random = 0;
+						TCPSocket * sock_random;
+						int seed=1;
+						bool searching= true;
+						do{
+							_random = utils.generateRandom(low, high,seed);
+							sock_random = _sockets[_random];
+							rand_user = dynamic_cast<User*>(sock_random);
+							rand_player_details = rand_user->getUserDetails();
+							if(rand_user !=  NULL && !(rand_player_details == x_player))
+							{
+								searching = false;
+							}
+							seed ++;
+							_random ++;
+						}while(searching);
 
+						if(rand_user!= NULL)
+						{
+							//send request with x's data
+							string x_details_str = x_player.name + ":";
+							x_details_str+=utils.toString(x_player.port);
+							// parse player_x_det to char * and send
+							utils.sendCommand(rand_user, MATCH_OFFER_FROM_X, x_details_str.c_str());
+						   // done until for the ack msg from the player Y
+						}
+ 						break;
+					}
+					case MATCH_ACK_OFFER_TO_X:
+					{
+						/**
+						 * user Y is sending ack and ready to play with x
+						 * TODO::
+						 * find x again (data in message {name:port})
+						 * match x and y
+						 * remove from multiple
+						 * refresh users list
+						 * on the client side: waiting for ack + details
+						 */
+						char * ackOffer;
+						ackOffer = utils.readBufferdCommand(peer, ackOffer);
+						// the details of the requester
+						UserLoginDetails dets_requester = utils.extractPeerDetails(ackOffer);
+						// find the requester socket
+						vector<TCPSocket*> _socks = multipleListener->getAll();
+						vector<TCPSocket*>::iterator it = _socks.begin();
+						User * requester_ = NULL;
+						while(it != _socks.end())
+						{
+							requester_ = dynamic_cast<User*>((*it));
+							if(requester_ != NULL)
+							{
+								if(requester_->getUserDetails() == dets_requester)
+								{
+									break;
+								}
+							}
+							it++;
+						}
+						// send cmd + accepter details to requester
+						User * tryAccepter = dynamic_cast<User*>(peer);
+						if(tryAccepter != NULL)
+						{
+							UserLoginDetails accepter_dets = tryAccepter->getUserDetails();
+							string accepter_dets_str = inet_ntoa(peer->getRemoteDescriptor().sin_addr);
+							accepter_dets_str+=":";
+							accepter_dets_str+=utils.toString(accepter_dets.port);
+							// let the requester know there is ack + details of accepter
+							utils.sendCommand(requester_, MATCH_OFFER_ACK_ACCEPTED_
+							,accepter_dets_str.c_str());;
+							/******************************************
+							 *********** ADD HANDLER UPDATE ************
+							 *********** add to busy state
+							 *******************************************/
+							handler->updateTupple(requester_,tryAccepter, MATCH_ID, MATCH_ROUTE_TO_BUSY);
+							multipleListener->pullOut(peer);
+							multipleListener->pullOut(requester_);
+						}
+						this->refreshUserList();
+						break;
+					}
+					case MATCH_OFFER_NACK_REJECTED_:
+					{
+						/**
+						 * let the requester know that there is a game decline
+						 * requester is found using the name:port msg from the response
+						 */
+						char * ackOffer;
+						ackOffer = utils.readBufferdCommand(peer, ackOffer);
+						// the details of the requester
+						UserLoginDetails dets_requester = utils.extractPeerDetails(ackOffer);
+						// find the requester socket
+						vector<TCPSocket*> _socks = multipleListener->getAll();
+						vector<TCPSocket*>::iterator it = _socks.begin();
+						User * requester_ = NULL;
+						while(it != _socks.end())
+						{
+							requester_ = dynamic_cast<User*>((*it));
+							if(requester_ != NULL)
+							{
+								if(requester_->getUserDetails() == dets_requester)
+								{
+									break;
+								}
+							}
+							it++;
+						}
+						// send cmd + accepter details to requester
+						User * tryAccepter = dynamic_cast<User*>(peer);
+						if(tryAccepter != NULL)
+						{
+							UserLoginDetails accepter_dets = tryAccepter->getUserDetails();
+							string accepter_dets_str = inet_ntoa(peer->getRemoteDescriptor().sin_addr);
+							accepter_dets_str+=":";
+							accepter_dets_str+=utils.toString(accepter_dets.port);
+							// let the requester know there is ack + details of accepter
+							utils.sendCommand(requester_, MATCH_OFFER_NACK_REJECTED_
+							,NULL);;
+						}
+						this->refreshUserList();
+						break;
+					}
+					case MATCH_USER_EXIT:
+					{
+						multipleListener->pullOut(peer);
+						peer->close();
+						refreshUserList();
 						break;
 					}
 					default:
@@ -118,5 +286,22 @@ string MatchingManager::generateUserList()
 		}
 		return str_buffer;
 }
-
+void MatchingManager::refreshUserList()
+{
+	vector<TCPSocket*> sockets = multipleListener->getAll();
+	vector<TCPSocket*>::iterator it_sockets = sockets.begin();
+	vector<UserLoginDetails> updated_list;
+	while(it_sockets != sockets.end())
+	{
+		User* tryUser = dynamic_cast<User*>((*it_sockets));
+		if(tryUser != NULL)
+		{
+			updated_list.push_back(tryUser->getUserDetails());
+		}
+		it_sockets++;
+	}
+	this->user_list = updated_list;
+}
 } /* namespace networkingLab */
+
+

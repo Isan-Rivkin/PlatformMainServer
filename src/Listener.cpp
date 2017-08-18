@@ -13,7 +13,8 @@ Listener::~Listener()
 {
 }
 networkingLab::Listener::Listener(size_t port,HandlerManager * oHandler)
-	:handler(oHandler),keepRunning(false),_first_LandR(true),_second_match(false)
+	:handler(oHandler),keepRunning(false)
+	,_first_LandR(true),_second_match(false),_third_busy(false)
 {
 	this->listenerSocket = new User(port);
 	port_listener = port;
@@ -42,6 +43,14 @@ void networkingLab::Listener::run()
 				cout <<"[Listener:] Matcher interrupter plugged."<<endl;
 				this->handler->update(peer,LISTEN_ID,ROUTE_TO_MATCH);
 				_second_match = false;
+				_third_busy = true;
+			}
+			else if(_third_busy)
+			{
+				TCPSocket * peer = listenerSocket->accept();
+				cout <<"[Listener:] Busy interrupter plugged."<<endl;
+				this->handler->update(peer,LISTEN_ID,ROUTE_TO_BUSY);
+				_third_busy = false;
 			}
 			else
 			{

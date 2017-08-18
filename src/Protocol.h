@@ -20,7 +20,7 @@
  // protocol specifics -> 3rd param
 #define ROUTE_TO_AUTH 21
 #define ROUTE_TO_MATCH 22
-
+#define ROUTE_TO_BUSY 37
 /********************************************************************************
  ************************ Authenthication Protocl *******************************
  ********************************************************************************/
@@ -58,4 +58,34 @@
 #define MATCH_RANDOM 19
 // x asks for list
 #define MATCH_LIST 20
+// offer to play from x
+#define MATCH_OFFER_FROM_X 25
+// ack offer from player x to server
+#define MATCH_ACK_OFFER_TO_X 26
+// ack offer is accepted to the requester followed by other details {ip:port}
+// from this point the requester will start game with the accepter using UDP
+#define MATCH_OFFER_ACK_ACCEPTED_ 27
+// nack to the ack above -> let the requester know other dont want to play.
+#define MATCH_OFFER_NACK_REJECTED_ 28
+// user asked to stop the game
+#define MATCH_USER_EXIT 29
+// identify command to handler manager -> pass to Busy
+#define MATCH_ROUTE_TO_BUSY 30
+/********************************************************************************
+ ******************************** Busy Protocl **********************************
+ ********************************************************************************/
+// id
+#define BUSY_ID 36
+// identify command to handler manager -> pass to Matcher
+#define BUSY_ROUTE_TO_MATCH 31
+// user asks to stop the game
+#define BUSY_STOP_GAME 32
+// interrupt new players
+#define BUSY_INTERRUPT_NEW 33
+// player request high_scores
+#define BUSY_REQ_HS 34
+// each player sends : save game details {name:score}
+#define BUSY_SAVE_HS 35
+// start at 38!
+
 #endif /* SRC_PROTOCOL_H_ */

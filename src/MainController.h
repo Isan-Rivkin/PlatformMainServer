@@ -13,6 +13,7 @@
 #include "Listener.h"
 #include "LAndR/AuthManager.h"
 #include "Matching/MatchingManager.h"
+#include "BusyManagerModule/BusyManager.h"
 #include <string.h>
 #include <strings.h>
 #include <iostream>
@@ -27,7 +28,7 @@ private:
 	Listener * listener;
 	AuthManager * authenthicator;
 	MatchingManager * matcher;
-
+	BusyManager * busy_manager;
 	public:
 		MainController(size_t listener_port);
 		virtual ~MainController();
@@ -35,12 +36,15 @@ private:
 		 virtual void initListener(Listener * oListener);
 		 virtual void initAuthenthicator(AuthManager * oAuthenthicator);
 		 virtual void initMatcher(MatchingManager * oManager);
+		 virtual void initBusy(BusyManager * oBusy);
 		 virtual void generateListenerInterrupter();
 		 virtual void generateMatcherInterrupter();
+		 virtual void generateBusyInterrupter();
 	public:
 	// update methods
 		virtual void update(const string & query);
 		virtual void update(TCPSocket * peer, int protocol_id, int protocol_specific);
+		virtual void updateTupple(TCPSocket * peerA,TCPSocket * peerB ,int protocol_id, int protocol_specific);
 	public:
 	// operational methods
 		virtual void startController();

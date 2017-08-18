@@ -52,7 +52,12 @@ void AuthManager::run()
 				int bytes = peer->read(buffer, len);
 				buffer[bytes] = '\0';
 				// msg: username:password
-				UserLoginDetails user  = utils.extractUserAuthDetails(buffer);
+				string raw="";
+				for(size_t i=0;i<bytes;++i)
+				{
+					raw+=buffer[i];
+				}
+				UserLoginDetails user  = utils.extractUserAuthDetails(raw);
 				user.port = peer->getRemoteDescriptor().sin_port;
 				user.ip = inet_ntoa(peer->getRemoteDescriptor().sin_addr);
 				vector<string> params;
@@ -92,7 +97,12 @@ void AuthManager::run()
 				int bytes = peer->read(buffer, len);
 				buffer[bytes] = '\0';
 				// msg: username:password
-				UserLoginDetails user  = utils.extractUserAuthDetails(buffer);
+				string str_buffer="";
+				for(size_t i=0;i<bytes;++i)
+				{
+					str_buffer+=buffer[i];
+				}
+				UserLoginDetails user  = utils.extractUserAuthDetails(str_buffer);
 				user.port = peer->getRemoteDescriptor().sin_port;
 				user.ip = inet_ntoa(peer->getRemoteDescriptor().sin_addr);
 				vector<string> params;

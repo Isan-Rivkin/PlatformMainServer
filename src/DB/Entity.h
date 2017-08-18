@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string.h>
 #include <strings.h>
-
+#include <string>
 using namespace std;
 
 namespace networkingLab

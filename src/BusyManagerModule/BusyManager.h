@@ -1,12 +1,12 @@
 /*
- * MatchingManager.h
+ * BusyManager.h
  *
- *  Created on: Aug 15, 2017
+ *  Created on: Aug 17, 2017
  *      Author: user
  */
 
-#ifndef MATCHING_MATCHINGMANAGER_H_
-#define MATCHING_MATCHINGMANAGER_H_
+#ifndef BUSYMANAGERMODULE_BUSYMANAGER_H_
+#define BUSYMANAGERMODULE_BUSYMANAGER_H_
 #include "MultipleTCPSocketsListener.h"
 #include "../HandlerManager.h"
 #include "MThread.h"
@@ -17,45 +17,40 @@
 #include "string.h"
 #include "strings.h"
 #include <vector>
+//db
+#include "../DB/AbstractDB.h"
 //utils
 #include "../SDKUtils/SDKUtils.h"
-
 #include <stdio.h>
 #include <arpa/inet.h>
 
-namespace networkingLab
-{
+namespace networkingLab {
 
-class MatchingManager : public MThread
+class BusyManager : public MThread
 {
-private:
-	TCPSocket * interrupt_socket;
-	TCPSocket * userInQueue;
-	HandlerManager * handler;
 	MultipleTCPSocketsListener * multipleListener;
-	vector<UserLoginDetails> user_list;
+	HandlerManager             * handler;
+	vector<pair<UserLoginDetails,UserLoginDetails> > _pairs;
+	TCPSocket * interrupt_socket;
+	TCPSocket * playerA;
+	TCPSocket * playerB;
+	AbstractDB * db_highscores;
 	bool keepRunning,first_time;
 	SDKUtils utils;
-
 public:
-	MatchingManager(HandlerManager * oHandler);
-	virtual ~MatchingManager();
+	BusyManager(HandlerManager * oHandler, AbstractDB * oDB_HS);
+	virtual ~BusyManager();
 public:
-
 	virtual void run();
 	// handler new user
-	void handle(TCPSocket * socket);
+	void handle(TCPSocket * playerA,TCPSocket * playB);
 	// interruption related
 	void setInterrupter(TCPSocket * oInterrupter);
 	void interrupt(int interrupt_cmd);
-
 private:
-	// generate list by request from UserLoginDetails -> char* <name:ip:port:/n>
-	string generateUserList();
-	// refresh the user list from multipleListener
-	void refreshUserList();
+	const char * parseHighScores(vector<Entity*> entities);
 };
 
 } /* namespace networkingLab */
 
-#endif /* MATCHING_MATCHINGMANAGER_H_ */
+#endif /* BUSYMANAGERMODULE_BUSYMANAGER_H_ */
