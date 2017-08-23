@@ -68,10 +68,6 @@ void BusyManager::run()
 				}
 				case BUSY_STOP_GAME:
 				{
-					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
-					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
-					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
-					cout <<"[busy:] REQUEST TO STOP GAME !!!!!!!!! " <<endl;
 					/**
 					 * read peer score
 					 * identify peer name
@@ -134,16 +130,11 @@ void BusyManager::run()
 //					}
 					handler->update(peer, BUSY_ID);
 					multipleListener->pullOut(peer);
-					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
-					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
-					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
-					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
-					cout <<"[Busy:] DISPATCHED A SOCKET %%%%%%%%%%%%%%%%   " <<endl;
 					break;
 				}
 				default:
 				{
-					cout <<"[Busy:] unrecognized command."<<endl;
+					cout <<"[Busy:] unrecognized command:"<< cmd <<endl;
 					break;
 				}
 				}

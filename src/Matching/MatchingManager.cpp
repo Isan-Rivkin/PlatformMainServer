@@ -99,6 +99,8 @@ void MatchingManager::run()
 						 * find random != x
 						 * send request with x's data
 						 */
+						if(multipleListener->getAll().size()<=2)
+							break;
 						User* tryUser = dynamic_cast<User*>(peer);
 						UserLoginDetails x_player = tryUser->getUserDetails();
 						x_player.ip = inet_ntoa(peer->getRemoteDescriptor().sin_addr);
@@ -110,6 +112,7 @@ void MatchingManager::run()
 						TCPSocket * sock_random;
 						int seed=1;
 						bool searching= true;
+						int limiter = 0;
 						do{
 							_random = utils.generateRandom(low, high,seed);
 							sock_random = _sockets[_random];
@@ -124,7 +127,8 @@ void MatchingManager::run()
 							}
 							seed ++;
 							_random ++;
-						}while(searching);
+							limiter ++;
+						}while(searching && limiter < 10);
 
 						if(rand_user!= NULL)
 						{

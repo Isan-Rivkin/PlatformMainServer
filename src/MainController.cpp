@@ -82,7 +82,6 @@ void MainController::update(TCPSocket * peer, int protocol_id, int protocol_spec
 	case BUSY_ID:
 	{
 		matcher->handle(peer);
-		cout << "[MainCtrlr: ] passed a peer to Matcher !!! " <<endl;;
 		break;
 	}
 	}
