@@ -19,7 +19,6 @@
 #include <vector>
 //utils
 #include "../SDKUtils/SDKUtils.h"
-
 // db
 #include "../DB/AbstractDB.h"
 #include "../DB/Entity.h"

@@ -17,7 +17,10 @@ src/BusyManagerModule/BusyManager.o: \
  ../src/BusyManagerModule/../DB/Entity.h \
  /home/user/Desktop/eclipse_ws_eliav/lab32/Utils/src/File.h \
  ../src/BusyManagerModule/../DB/../SDKUtils/SDKUtils.h \
- ../src/BusyManagerModule/../SDKUtils/SDKUtils.h
+ ../src/BusyManagerModule/../SDKUtils/SDKUtils.h \
+ ../src/BusyManagerModule/HighScoresLogic.h \
+ ../src/BusyManagerModule/../DB/Entity.h \
+ ../src/BusyManagerModule/../SDKUtils/MiniHashMap.h
 
 ../src/BusyManagerModule/BusyManager.h:
 
@@ -54,3 +57,9 @@ src/BusyManagerModule/BusyManager.o: \
 ../src/BusyManagerModule/../DB/../SDKUtils/SDKUtils.h:
 
 ../src/BusyManagerModule/../SDKUtils/SDKUtils.h:
+
+../src/BusyManagerModule/HighScoresLogic.h:
+
+../src/BusyManagerModule/../DB/Entity.h:
+
+../src/BusyManagerModule/../SDKUtils/MiniHashMap.h:

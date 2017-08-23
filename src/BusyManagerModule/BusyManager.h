@@ -21,6 +21,8 @@
 #include "../DB/AbstractDB.h"
 //utils
 #include "../SDKUtils/SDKUtils.h"
+#include "HighScoresLogic.h"
+
 #include <stdio.h>
 #include <arpa/inet.h>
 
@@ -35,6 +37,7 @@ class BusyManager : public MThread
 	TCPSocket * playerA;
 	TCPSocket * playerB;
 	AbstractDB * db_highscores;
+	HighScoresLogic hs_logic;
 	bool keepRunning,first_time;
 	SDKUtils utils;
 public:
@@ -49,6 +52,7 @@ public:
 	void interrupt(int interrupt_cmd);
 private:
 	const char * parseHighScores(vector<Entity*> entities);
+	string parseHighScores(vector<UserHighScoresData> sorted_hs);
 };
 
 } /* namespace networkingLab */

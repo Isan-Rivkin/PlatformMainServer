@@ -12,7 +12,9 @@
  ************************ Network Protocl ***************************************
  ********************************************************************************/
 #define SERVER_IP "127.0.0.1"
+#define SERVER_PORT 6666
 #define NEW_USER_LOGGED_IN 10
+#define MAIN_ERROR_UNKOWN 40
 /********************************************************************************
  ************************ Listener Protocl **************************************
  ********************************************************************************/
@@ -86,6 +88,6 @@
 #define BUSY_REQ_HS 34
 // each player sends : save game details {name:score}
 #define BUSY_SAVE_HS 35
-// start at 38!
+// start at 41!
 
 #endif /* SRC_PROTOCOL_H_ */

@@ -22,7 +22,10 @@ src/MainController.o: ../src/MainController.cpp ../src/MainController.h \
  ../src/BusyManagerModule/../Protocol.h \
  ../src/BusyManagerModule/../User.h \
  ../src/BusyManagerModule/../DB/AbstractDB.h \
- ../src/BusyManagerModule/../SDKUtils/SDKUtils.h
+ ../src/BusyManagerModule/../SDKUtils/SDKUtils.h \
+ ../src/BusyManagerModule/HighScoresLogic.h \
+ ../src/BusyManagerModule/../DB/Entity.h \
+ ../src/BusyManagerModule/../SDKUtils/MiniHashMap.h
 
 ../src/MainController.h:
 
@@ -93,3 +96,9 @@ src/MainController.o: ../src/MainController.cpp ../src/MainController.h \
 ../src/BusyManagerModule/../DB/AbstractDB.h:
 
 ../src/BusyManagerModule/../SDKUtils/SDKUtils.h:
+
+../src/BusyManagerModule/HighScoresLogic.h:
+
+../src/BusyManagerModule/../DB/Entity.h:
+
+../src/BusyManagerModule/../SDKUtils/MiniHashMap.h:

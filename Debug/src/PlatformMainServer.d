@@ -22,7 +22,11 @@ src/PlatformMainServer.o: ../src/PlatformMainServer.cpp \
  ../src/BusyManagerModule/../Protocol.h \
  ../src/BusyManagerModule/../User.h \
  ../src/BusyManagerModule/../DB/AbstractDB.h \
- ../src/BusyManagerModule/../SDKUtils/SDKUtils.h ../src/DB/AbstractDB.h \
+ ../src/BusyManagerModule/../SDKUtils/SDKUtils.h \
+ ../src/BusyManagerModule/HighScoresLogic.h \
+ ../src/BusyManagerModule/../DB/Entity.h \
+ ../src/BusyManagerModule/../SDKUtils/MiniHashMap.h \
+ ../src/BusyManagerModule/HighScoresLogic.h ../src/DB/AbstractDB.h \
  ../src/DB/BasicDB.h ../src/DB/AbstractDB.h ../src/DB/Entity.h \
  ../src/DB/../SDKUtils/SDKUtils.h ../src/DB/Entity.h
 
@@ -95,6 +99,14 @@ src/PlatformMainServer.o: ../src/PlatformMainServer.cpp \
 ../src/BusyManagerModule/../DB/AbstractDB.h:
 
 ../src/BusyManagerModule/../SDKUtils/SDKUtils.h:
+
+../src/BusyManagerModule/HighScoresLogic.h:
+
+../src/BusyManagerModule/../DB/Entity.h:
+
+../src/BusyManagerModule/../SDKUtils/MiniHashMap.h:
+
+../src/BusyManagerModule/HighScoresLogic.h:
 
 ../src/DB/AbstractDB.h:
 

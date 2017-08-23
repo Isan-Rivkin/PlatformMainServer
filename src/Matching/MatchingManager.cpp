@@ -61,6 +61,7 @@ void MatchingManager::run()
 						User * tryPlayer = dynamic_cast<User*>(peer);
 						UserLoginDetails player_x_det = tryPlayer->getUserDetails();
 						UserLoginDetails player_y_det = utils.extractPeerDetails(buff);
+						player_x_det.ip = inet_ntoa(peer->getRemoteDescriptor().sin_addr);
 						vector<TCPSocket*> list =multipleListener->getAll();
 						vector<TCPSocket*>::iterator socket_it= list.begin();
 						User * u=NULL;
@@ -81,7 +82,9 @@ void MatchingManager::run()
 						// requester = {name:port}
 						if(u!= NULL)
 						{
-							string x_details_str = player_x_det.name + ":";
+							string x_details_str = player_x_det.ip;
+							x_details_str +=":";
+							 x_details_str += player_x_det.name + ":";
 							x_details_str+=utils.toString(player_x_det.port);
 							// parse player_x_det to char * and send
 							utils.sendCommand(u, MATCH_OFFER_FROM_X, x_details_str.c_str());
@@ -98,6 +101,7 @@ void MatchingManager::run()
 						 */
 						User* tryUser = dynamic_cast<User*>(peer);
 						UserLoginDetails x_player = tryUser->getUserDetails();
+						x_player.ip = inet_ntoa(peer->getRemoteDescriptor().sin_addr);
 						UserLoginDetails rand_player_details;
 						vector<TCPSocket*> _sockets = multipleListener->getAll();
 						int low =0,high= _sockets.size()-1;
@@ -111,9 +115,12 @@ void MatchingManager::run()
 							sock_random = _sockets[_random];
 							rand_user = dynamic_cast<User*>(sock_random);
 							rand_player_details = rand_user->getUserDetails();
-							if(rand_user !=  NULL && !(rand_player_details == x_player))
-							{
-								searching = false;
+							if(sock_random->getSocketFileDescriptor() != interrupter_fd){
+								if(rand_user !=  NULL && (rand_player_details.port != x_player.port)
+										&&(rand_player_details.name != x_player.name))
+								{
+									searching = false;
+								}
 							}
 							seed ++;
 							_random ++;
@@ -122,7 +129,9 @@ void MatchingManager::run()
 						if(rand_user!= NULL)
 						{
 							//send request with x's data
-							string x_details_str = x_player.name + ":";
+							string x_details_str = x_player.ip;
+							x_details_str += ":";
+							x_details_str += x_player.name + ":";
 							x_details_str+=utils.toString(x_player.port);
 							// parse player_x_det to char * and send
 							utils.sendCommand(rand_user, MATCH_OFFER_FROM_X, x_details_str.c_str());
@@ -149,17 +158,24 @@ void MatchingManager::run()
 						vector<TCPSocket*> _socks = multipleListener->getAll();
 						vector<TCPSocket*>::iterator it = _socks.begin();
 						User * requester_ = NULL;
+						bool found_other = false;
 						while(it != _socks.end())
 						{
 							requester_ = dynamic_cast<User*>((*it));
 							if(requester_ != NULL)
 							{
-								if(requester_->getUserDetails() == dets_requester)
+								if(requester_->getUserDetails().name == dets_requester.name &&
+										requester_->getUserDetails().port == dets_requester.port)
 								{
+									found_other = true;
 									break;
 								}
 							}
 							it++;
+						}
+						if(!found_other)
+						{
+							break;
 						}
 						// send cmd + accepter details to requester
 						User * tryAccepter = dynamic_cast<User*>(peer);
@@ -170,6 +186,7 @@ void MatchingManager::run()
 							accepter_dets_str+=":";
 							accepter_dets_str+=utils.toString(accepter_dets.port);
 							// let the requester know there is ack + details of accepter
+
 							utils.sendCommand(requester_, MATCH_OFFER_ACK_ACCEPTED_
 							,accepter_dets_str.c_str());;
 							/******************************************
@@ -177,7 +194,7 @@ void MatchingManager::run()
 							 *********** add to busy state
 							 *******************************************/
 							handler->updateTupple(requester_,tryAccepter, MATCH_ID, MATCH_ROUTE_TO_BUSY);
-							multipleListener->pullOut(peer);
+							multipleListener->pullOut(tryAccepter);
 							multipleListener->pullOut(requester_);
 						}
 						this->refreshUserList();
@@ -202,7 +219,8 @@ void MatchingManager::run()
 							requester_ = dynamic_cast<User*>((*it));
 							if(requester_ != NULL)
 							{
-								if(requester_->getUserDetails() == dets_requester)
+								if(requester_->getUserDetails().name == dets_requester.name
+										&& requester_->getUserDetails().port == dets_requester.port)
 								{
 									break;
 								}
@@ -245,12 +263,14 @@ void MatchingManager::handle(TCPSocket* socket)
 {
 	if(first_time)
 	{
+		interrupter_fd = socket->getSocketFileDescriptor();
 		multipleListener->addSocket(socket);
 		start();
 		first_time = false;
 	}
 	else
 	{
+		cout << "[Matcher:] just got a new socket ! " <<endl;
 		userInQueue = socket;
 		interrupt(MATCH_INTERRUPT_NEW);
 	}

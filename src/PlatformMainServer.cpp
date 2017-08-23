@@ -15,6 +15,7 @@
 #include "User.h"
 #include "LAndR/AuthManager.h"
 #include "BusyManagerModule/BusyManager.h"
+#include "BusyManagerModule/HighScoresLogic.h"
 #include "Matching/MatchingManager.h"
 #include "Protocol.h"
 // db includes
@@ -26,6 +27,7 @@
 #include <string.h>
 // utils
 #include "SDKUtils/SDKUtils.h"
+
 // random port
 #include <stdio.h>      /* printf, scanf, puts, NULL */
 #include <stdlib.h>     /* srand, rand */
@@ -127,9 +129,33 @@ public:
 	}
 	void UtilsAndParsing()
 	{
-//		SDKUtils utils;
-//		UserLoginDetails details = utils.extractUserAuthDetails("ronen:123456");
-//		cout << "username->"<<details.name<<"pwd->"<<details.password<<endl;
+		BasicDB * db_hs = new BasicDB("src/DB/hs_config.txt");
+		db_hs->loadConfig();
+		vector<string> params;
+
+		//add entities highscores
+
+//		params.push_back("avi");
+//		params.push_back("21");
+//		vector<string> params2;
+//	    params2.push_back("yarden");
+//		params2.push_back("69");
+//		Entity * e = new Entity("",params);
+//		Entity * e2 = new Entity("",params2);
+//		db_hs->addToTable(e);
+//		db_hs->addToTable(e2);
+		HighScoresLogic logic;
+		vector<UserHighScoresData> hs = logic.parseHighscores(db_hs->getAllTable());
+		for(size_t i=0;i<hs.size();++i)
+		{
+			cout << "=============" <<endl;
+			cout << "name: " << hs[i].name<<endl;
+			cout << "score: " <<hs[i].score<<endl;
+			cout << "winnings: " <<hs[i].winnings <<endl;
+			cout << "=============" <<endl;
+		}
+//
+
 	}
 	void UtilsDBtoVec()
 	{
@@ -152,6 +178,71 @@ class UsersTest : public MThread
 {	public:
 	SDKUtils utils;
 	string details;
+	/**
+	 * connect 2 x,y
+	 * login
+	 * x asks for y
+	 * y send ack
+	 * x read ack
+	 * passed to busy
+	 * declare end game on x,y + send each score
+	 * print hs result x,y
+	 */
+	void runEndGame()
+	{
+		sleep(1.5);
+								TCPSocket * client_x = new User("127.0.0.1",MAIN_PORT);
+								details = "ronen:123456";
+								sleep(1.5);
+								sendCommand(client_x, AUTH_REQ_LOGIN, details.c_str());
+								sleep(2);
+								// connect y
+								TCPSocket * client_y = new User("127.0.0.1",MAIN_PORT);
+								sleep(1.5);
+								details ="haimke:123456";
+								sendCommand(client_y, AUTH_REQ_LOGIN, details.c_str());
+								sleep(2);
+								sendCommand(client_x, MATCH_RANDOM, NULL);
+								sleep(3);
+								// random t reads the offer :
+								int cmd = utils.readCommand(client_y);
+								char buffer[1000];
+								char * offer= utils.readBufferdCommand(client_y, buffer);
+								cout << "offer details |" <<offer<<"|"<<endl;
+								sleep(1);
+								cout << " sended ack " <<endl;
+								utils.sendCommand(client_y, MATCH_ACK_OFFER_TO_X, offer);
+								sleep(1.5);
+								// x reads the ack and details of the accepter
+								utils.readCommand(client_x);
+								char * b;
+								b = utils.readBufferdCommand(client_x, b);
+								cout << b << " has accepted to play with you(x) ! "<<endl;
+								sleep(5);
+								/**********************************************
+								 **************Actual end game test ***********
+								 **********************************************/
+								// update end game
+								string scores_x = "56";
+								int sended = utils.sendCommand(client_x, BUSY_STOP_GAME, scores_x.c_str());
+								if(sended != 1)
+									cout << "did not send the command" <<endl;
+								else
+									cout << " success sending the cmd " <<endl;
+								// read scores for x :
+								cout << "readin "<<endl;
+								utils.readCommand(client_x);
+								cout << "readed cmd " <<endl;
+		char * buff_hs;
+		buff_hs = utils.readBufferdCommand(client_x, buff_hs);
+		cout << " got highscores: " <<endl;
+		cout <<buff_hs<<endl;
+		sleep(1);
+		string scores_y = "69";
+		sleep(1);
+		utils.sendCommand(client_y, BUSY_STOP_GAME, scores_y.c_str());
+
+	}
 	/**
 	 * connect 2 x,y
 	 * x asks random
@@ -243,46 +334,47 @@ class UsersTest : public MThread
 	// y reads the offer and prints
 	virtual void runMatcherXOfferYTest()
 	{
-		// connect x
-			sleep(1.5);
-			TCPSocket * client_x = new User("127.0.0.1",MAIN_PORT);
-			details = "ronen:123456";
-			sleep(1.5);
-			sendCommand(client_x, AUTH_REQ_LOGIN, details.c_str());
-			sleep(2);
-			// connect y
-			TCPSocket * client_y = new User("127.0.0.1",MAIN_PORT);
-			sleep(1.5);
-			details ="haimke:123456";
-			sendCommand(client_y, AUTH_REQ_LOGIN, details.c_str());
-			sleep(1);
-			// ask for the players list :
-			utils.sendCommand(client_x, MATCH_LIST, NULL);
-			utils.readCommand(client_x);
-			char * b;
-			b = utils.readBufferdCommand(client_x, b);
-			cout << " LIST OF PLAYERS FROM THE SERVER: " <<endl;
-			cout<<b<<endl;
-			// x offer y to play
-			string y_details = details;
-			size_t haimkes_port =utils.getClientPortFromList("haimke", b, strlen(b));
-			y_details = "haimke:";
-			y_details+=utils.toString(haimkes_port);
-			utils.sendCommand(client_x, MATCH_MATCH_Y, y_details.c_str());
-			sleep(3);
-			// y prints the offer
-			int cmd2 = utils.readCommand(client_y);
-			char buffer[1000];
-			char * offer= utils.readBufferdCommand(client_y, buffer);
-			cout << "offer details |" <<offer<<"|"<<endl;
-			sleep(1);
-			cout << " sended ack " <<endl;
-			utils.sendCommand(client_y, MATCH_ACK_OFFER_TO_X, offer);
-			sleep(1.4);
+//		// connect x
+//			sleep(1.5);
+//			TCPSocket * client_x = new User("127.0.0.1",MAIN_PORT);
+//			details = "ronen:123456";
+//			sleep(1.5);
+//			sendCommand(client_x, AUTH_REQ_LOGIN, details.c_str());
+//			sleep(2);
+//			// connect y
+//			TCPSocket * client_y = new User("127.0.0.1",MAIN_PORT);
+//			sleep(1.5);
+//			details ="haimke:123456";
+//			sendCommand(client_y, AUTH_REQ_LOGIN, details.c_str());
+//			sleep(1);
+//			// ask for the players list :
+//			utils.sendCommand(client_x, MATCH_LIST, NULL);
+//			utils.readCommand(client_x);
+//			char * b;
+//			b = utils.readBufferdCommand(client_x, b);
+//			cout << " LIST OF PLAYERS FROM THE SERVER: " <<endl;
+//			cout<<b<<endl;
+//			// x offer y to play
+//			string y_details = details;
+//			size_t haimkes_port =utils.getClientPortFromList("haimke", b, strlen(b));
+//			y_details = "haimke:";
+//			y_details+=utils.toString(haimkes_port);
+//			utils.sendCommand(client_x, MATCH_MATCH_Y, y_details.c_str());
+//			sleep(3);
+//			// y prints the offer
+//			int cmd2 = utils.readCommand(client_y);
+//			char buffer[1000];
+//			char * offer= utils.readBufferdCommand(client_y, buffer);
+//			cout << "offer details |" <<offer<<"|"<<endl;
+//			sleep(1);
+//			cout << " sended ack " <<endl;
+//			utils.sendCommand(client_y, MATCH_ACK_OFFER_TO_X, offer);
+//			sleep(1.4);
 	}
 	virtual void run()
 	{
-		RunBusyLoginTest();
+		//RunBusyLoginTest();
+		runEndGame();
 	}
 //	virtual void run()
 //	{
@@ -409,7 +501,7 @@ bool runLoginTest()
 //		std::cout<<"Failure ! writing/reading to file"<<std::endl;
 //	}
 //	test.loadDBConfig();
-//	test.UtilsAndParsing();
+	test.UtilsAndParsing();
 //  test.UtilsDBtoVec();
 //	test.testAPI();
 	return true;
@@ -442,11 +534,13 @@ bool initAllConfig()
 {
 	// server initialization
 	SDKUtils utils;
+
 	int p1 = utils.generateRandom(2500, 9000);
 	MAIN_PORT = (size_t)p1;
-	MainController * handler = new MainController(MAIN_PORT);
-	Listener * listener = new Listener(MAIN_PORT,handler);
+	MainController * handler = new MainController(SERVER_PORT);
+	Listener * listener = new Listener(SERVER_PORT,handler);
 	BasicDB * db = new BasicDB("src/DB/config.txt");
+	// TODO:: BUG FIX CORE DUMP
 	AuthManager * authenticator = new AuthManager(handler,db);
 	MatchingManager * matcher = new MatchingManager(handler);
 	BasicDB * db_hs = new BasicDB("src/DB/hs_config.txt");
@@ -456,6 +550,7 @@ bool initAllConfig()
 	handler->initMatcher(matcher);
 	handler->initBusy(busy);
 	handler->startController();
+	handler->waitForThread();
 	return true;
 }
 bool runMatcherPeerTest()
@@ -473,9 +568,9 @@ int main()
 	cout << "staring MAIN  test ---- > "<<endl;
 	//runLoginTest();
 	//runListenerTest();
-	runMatcherPeerTest();
+	//runMatcherPeerTest();
 	// cruacial so that main wont die.
-	sleep(25);
+	initAllConfig();
 	cout << "finished MAIN test ---- > "<<endl;
 	return 0;
 }

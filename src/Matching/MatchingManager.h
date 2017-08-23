@@ -36,6 +36,7 @@ private:
 	vector<UserLoginDetails> user_list;
 	bool keepRunning,first_time;
 	SDKUtils utils;
+	int interrupter_fd;
 
 public:
 	MatchingManager(HandlerManager * oHandler);

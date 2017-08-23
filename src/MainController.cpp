@@ -36,7 +36,12 @@ void MainController::updateTupple(TCPSocket* peerA, TCPSocket* peerB, int protoc
 	{
 	case MATCH_ID:
 	{
-		busy_manager->handle(peerB, peerB);
+		busy_manager->handle(peerA, peerB);
+		break;
+	}
+	default:
+	{
+		break;
 	}
 	}
 }
@@ -77,6 +82,7 @@ void MainController::update(TCPSocket * peer, int protocol_id, int protocol_spec
 	case BUSY_ID:
 	{
 		matcher->handle(peer);
+		cout << "[MainCtrlr: ] passed a peer to Matcher !!! " <<endl;;
 		break;
 	}
 	}

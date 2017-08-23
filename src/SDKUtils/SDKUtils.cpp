@@ -208,6 +208,7 @@ char* SDKUtils::readBufferdCommand(TCPSocket* sock,char * deletee) const
 
 size_t SDKUtils::getClientPortFromList(const string& client_name, const char* list,size_t len) const
 {
+	using namespace std;
 	size_t count_delim=0;
 	string full_list_str="";
 	string str_port="";
@@ -239,8 +240,9 @@ size_t SDKUtils::getClientPortFromList(const string& client_name, const char* li
 }
 
 
-size_t SDKUtils::toSize(const string& number_str) const
+size_t SDKUtils::toSize(const string number_str) const
 {
+	using namespace std;
 	std::istringstream iss(number_str);
 	size_t port;
 	iss >> port;

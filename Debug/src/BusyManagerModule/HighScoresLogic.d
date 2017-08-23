@@ -11,7 +11,8 @@ src/BusyManagerModule/HighScoresLogic.o: \
  /home/user/Desktop/eclipse_ws_eliav/lab32/Utils/src/TCPSocket.h \
  /home/user/Desktop/eclipse_ws_eliav/lab32/Utils/src/Socket.h \
  ../src/BusyManagerModule/../DB/Entity.h \
- ../src/BusyManagerModule/../SDKUtils/SDKUtils.h
+ ../src/BusyManagerModule/../SDKUtils/SDKUtils.h \
+ ../src/BusyManagerModule/../SDKUtils/MiniHashMap.h
 
 ../src/BusyManagerModule/HighScoresLogic.h:
 
@@ -36,3 +37,5 @@ src/BusyManagerModule/HighScoresLogic.o: \
 ../src/BusyManagerModule/../DB/Entity.h:
 
 ../src/BusyManagerModule/../SDKUtils/SDKUtils.h:
+
+../src/BusyManagerModule/../SDKUtils/MiniHashMap.h:

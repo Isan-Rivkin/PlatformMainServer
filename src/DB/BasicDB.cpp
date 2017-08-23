@@ -23,7 +23,9 @@ vector<Entity*> BasicDB::getAllTable(const string& table_name) {
 	File * reader = new File(table_name);
 	char buffer[50000];
 	int bytes = reader->read(buffer, 50000);
-	ret = utils.extractAllEntities(buffer, strlen(buffer));
+	 buffer[bytes] = '\0';
+	//ret = utils.extractAllEntities(buffer, strlen(buffer));
+	ret = utils.extractAllEntities(buffer, bytes);
 	return ret;
 }
 

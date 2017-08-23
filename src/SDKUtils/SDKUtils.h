@@ -31,10 +31,11 @@ struct UserLoginDetails
 	string ip;
 	TCPSocket * _socket;
 	size_t port;
-	UserLoginDetails():ip(""),name(""),password(""),_socket(NULL),port(0){}
+	UserLoginDetails():name(""),password(""),ip(""),_socket(NULL),port(0){}
 	UserLoginDetails(const UserLoginDetails& other)
 	{
 		name = other.name;
+		password = other.password;
 		ip=other.ip;
 		port = other.port;
 		_socket=other._socket;
@@ -105,7 +106,7 @@ public:
 	 /**
 	  * cast string number to size_t
 	  */
-	 size_t toSize(const string& number_str)const;
+	 size_t toSize(const string number_str)const;
 };
 
 } /* namespace networkingLab */

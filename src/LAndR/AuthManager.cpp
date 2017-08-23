@@ -73,14 +73,16 @@ void AuthManager::run()
 				if(db_users->isEntityExist(registrant))
 				{
 					// send nack
-					utils.sendCommand(peer, AUTH_NACK_LOGIN, NULL);
+					string users_port = utils.toString(user.port);
+					utils.sendCommand(peer, AUTH_NACK_LOGIN, users_port.c_str());
 				}
 				// ok to register - V
 				else
 				{
 					this->db_users->addToTable(registrant);
 					// send ack to user
-					 utils.sendCommand(peer, AUTH_ACK_LOGIN, NULL);
+					string users_port = utils.toString(user.port);
+					 utils.sendCommand(peer, AUTH_ACK_LOGIN, users_port.c_str());
 					// remove from queue
 					 multipleListener->pullOut(peer);
 					 tryUser->setUserDetails(user);
@@ -115,6 +117,9 @@ void AuthManager::run()
 				// process user to next state:
 				if(db_users->isEntityExist(registrant))
 				{
+					// send ack to user
+					string users_port = utils.toString(user.port);
+					utils.sendCommand(peer, AUTH_ACK_LOGIN, users_port.c_str());
 					tryUser->setUserDetails(user);
 					handler->update(peer, AUTH_ID);
 					multipleListener->pullOut(peer);
@@ -122,7 +127,8 @@ void AuthManager::run()
 				else
 				{
 					// send nack
-					utils.sendCommand(peer, AUTH_NACK_LOGIN, NULL);
+					string users_port = utils.toString(user.port);
+					utils.sendCommand(peer, AUTH_NACK_LOGIN, users_port.c_str());
 				}
 				break;
 			}

@@ -33,7 +33,6 @@ void BusyManager::run()
 				{
 				case BUSY_INTERRUPT_NEW:
 				{
-					cout <<"[Busy:] got 2 clients !" <<endl;
 					if(playerA == NULL || playerB == NULL)
 					{
 						cout <<"[Busy:] Error: no 2 players."<<endl;
@@ -65,6 +64,14 @@ void BusyManager::run()
 				}
 				case BUSY_SAVE_HS:
 				{
+						break;
+				}
+				case BUSY_STOP_GAME:
+				{
+					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
+					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
+					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
+					cout <<"[busy:] REQUEST TO STOP GAME !!!!!!!!! " <<endl;
 					/**
 					 * read peer score
 					 * identify peer name
@@ -72,8 +79,9 @@ void BusyManager::run()
 					 * send to user the high_scores
 					 * return the user back to the Matcher
 					 */
+					string hs_peer_name="";
 					char * score_buff;
-					score_buff = utils.readBufferdCommand(peer, score_buff);
+				    score_buff = utils.readBufferdCommand(peer, score_buff);
 					string str_score = "";
 					string str_name ="";
 					for(size_t i = 0; i<strlen(score_buff);++i)
@@ -84,20 +92,53 @@ void BusyManager::run()
 					if(tryUser != NULL)
 					{
 						str_name = tryUser->getUserDetails().name;
+						hs_peer_name = str_name;
 						vector<string> params;
 						params.push_back(str_name);
 						params.push_back(str_score);
 						Entity * entity = new Entity("",params);
 						db_highscores->addToTable(entity);
 					}
+					else
+					{
+						cout <<"[Busy:] Couldn't find/cast the requested peer" <<endl;
+					}
 					vector<Entity*> all_table = db_highscores->getAllTable();
-					parseHighScores(all_table);
-					utils.sendCommand(peer,BUSY_REQ_HS,parseHighScores(all_table));
+					vector<UserHighScoresData> orderd_hs = hs_logic.parseHighscores(all_table);
+//					const char * hs_net = parseHighScores(orderd_hs);
+					string hs_net =  parseHighScores(orderd_hs);;
+					/**
+					 * send full highscores list to player
+					 */
+					utils.sendCommand(peer,BUSY_STOP_GAME,hs_net.c_str());
+
+					// deleted now temporary
+					//
+					// delete the pair from list
+//					vector<pair<UserLoginDetails,UserLoginDetails> >::iterator it = _pairs.begin();
+//					size_t peerPort = tryUser->getUserDetails().port;
+//					while(it != _pairs.end())
+//					{
+//						string f_p = (*it).first.name;
+//						string s_p = (*it).second.name;
+//						size_t f_port =(*it).first.port;
+//						size_t s_port = (*it).second.port;
+//						if((f_p == hs_peer_name && f_port == peerPort)
+//								|| (s_p == hs_peer_name && s_port == peerPort))
+//						{
+//							_pairs.erase(it);
+//							it = _pairs.end();
+//							break;
+//						}
+//						it++;
+//					}
 					handler->update(peer, BUSY_ID);
-					break;
-				}
-				case BUSY_STOP_GAME:
-				{
+					multipleListener->pullOut(peer);
+					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
+					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
+					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
+					cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5"<<endl;
+					cout <<"[Busy:] DISPATCHED A SOCKET %%%%%%%%%%%%%%%%   " <<endl;
 					break;
 				}
 				default:
@@ -160,5 +201,25 @@ const char* BusyManager::parseHighScores(vector<Entity*> entities)
 	}
 	return str_hs.c_str();
 }
+
+string BusyManager::parseHighScores(vector<UserHighScoresData> sorted_hs)
+{
+	vector<UserHighScoresData>::iterator it = sorted_hs.begin();
+	string str_hs="";
+	while(it!= sorted_hs.end())
+	{
+			str_hs+= (*it).name;
+			str_hs+=",";
+			str_hs+=utils.toString((*it).score);
+			str_hs+=",";
+			str_hs+=utils.toString((*it).winnings);
+			str_hs+='\n';
+			it++;
+
+	}
+	return str_hs;
+}
+
+
 
 } /* namespace networkingLab */

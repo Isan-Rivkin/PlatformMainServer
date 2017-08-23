@@ -25,20 +25,16 @@ const MiniHashMap& MiniHashMap::addKey(const string& key)
 	{
 		keys.push_back(key);
 	}
+
 	return *this;
 }
 
 bool MiniHashMap::contains(const string& key) const
 {
-	vector<string>::iterator it = keys.begin();
-
-	while(it != keys.end())
+	for(size_t i=0; i<keys.size();++i)
 	{
-		if((*it) == key)
-		{
+		if(keys[i] == key)
 			return true;
-		}
-		it++;
 	}
 	return false;
 }
