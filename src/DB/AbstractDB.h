@@ -36,6 +36,7 @@ public:
 		virtual vector<Entity*> getAllTable(const string& table_name)=0;
 		virtual vector<Entity*> getAllTable()=0;
 		virtual bool isEntityExist(string table_name,const Entity *entity)=0;
+		virtual bool isNameExist(string table_name,const Entity* entity)=0;
 		virtual bool isEntityExist(const Entity* entity)=0;
 		virtual Entity* getEntity(string table_name,string id)=0;
 	/**

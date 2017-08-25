@@ -123,6 +123,7 @@ void AuthManager::run()
 					tryUser->setUserDetails(user);
 					handler->update(peer, AUTH_ID);
 					multipleListener->pullOut(peer);
+
 				}
 				else
 				{

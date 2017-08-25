@@ -26,6 +26,7 @@ public:
 		virtual vector<Entity*> getAllTable(const string& table_name);
 		virtual vector<Entity*> getAllTable();
 		virtual bool isEntityExist(string table_name,const Entity* entity);
+		virtual bool isNameExist(string table_name,const Entity* entity);
 		virtual bool isEntityExist(const Entity *entity);
 		virtual Entity* getEntity(string table_name,string id);
 	/**
@@ -36,7 +37,6 @@ public:
 		virtual void addToTable(const Entity* entity);
 		virtual void deleteFromTable(string table_name,const Entity *entity);
 		virtual void deleteFromTable(const Entity *entity);
-
 };
 
 } /* namespace networkingLab */

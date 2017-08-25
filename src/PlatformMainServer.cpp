@@ -25,8 +25,11 @@
 #include <vector>
 #include "File.h"
 #include <string.h>
+#include "DB/LoginDB.h"
 // utils
 #include "SDKUtils/SDKUtils.h"
+// hashing
+#include "Coder/EntitityCoder.h"
 
 // random port
 #include <stdio.h>      /* printf, scanf, puts, NULL */
@@ -44,6 +47,18 @@ class LoginDBTester : public MThread
 	File * file;
 public:
 	void run(){}
+	void print(vector<Entity*> ents)
+	{
+		for(size_t i=0;i<ents.size();++i)
+		{
+			cout << "Entity #"<<i<<" ";
+			for(size_t j=0;j<ents[i]->getParams().size();++j)
+			{
+				cout <<ents[i]->getParams()[j]<<" , ";
+			}
+			cout <<endl;
+		}
+	}
 	bool testEqualUser()
 	{
 		UserLoginDetails u1("isan","123"),u2("isan","123");
@@ -539,8 +554,8 @@ bool initAllConfig()
 	MAIN_PORT = (size_t)p1;
 	MainController * handler = new MainController(SERVER_PORT);
 	Listener * listener = new Listener(SERVER_PORT,handler);
-	BasicDB * db = new BasicDB("src/DB/config.txt");
-	// TODO:: BUG FIX CORE DUMP
+	EntitityCoder * coder= new EntitityCoder();
+	LoginDB * db = new LoginDB(coder,"src/DB/config.txt");
 	AuthManager * authenticator = new AuthManager(handler,db);
 	MatchingManager * matcher = new MatchingManager(handler);
 	BasicDB * db_hs = new BasicDB("src/DB/hs_config.txt");
@@ -563,6 +578,36 @@ bool runMatcherPeerTest()
 	cout << " peer test has ended ------ >> " <<endl;
 	return 0;
 }
+bool runCoderTest()
+{
+// init few entities
+	vector<string> e1_p,e2_p;
+	e1_p.push_back("isan");
+	e1_p.push_back("123");
+	e2_p.push_back("nuni");
+	e2_p.push_back("321");
+	Entity * e1 = new Entity("",e1_p);
+	Entity * e2 = new Entity("",e2_p);
+	vector<Entity*> ents;
+	ents.push_back(e1);
+	ents.push_back(e2);
+
+	// start hashing
+	EntitityCoder coder;
+
+	// encode
+	coder.encode(ents);
+	LoginDBTester ut;
+	cout <<"Encoded:" <<endl;
+	ut.print(ents);
+	cout << "bbottom line : " << endl;
+			cout << ents[0]->getParams()[1] <<endl;
+	coder.decode(ents);
+	cout << "Decoded:" <<endl;
+	ut.print(ents);
+	cout << "bbottom line : " << endl;
+	cout << ents[0]->getParams()[1] <<endl;
+}
 int main()
 {
 	cout << "staring MAIN  test ---- > "<<endl;
@@ -571,6 +616,7 @@ int main()
 	//runMatcherPeerTest();
 	// cruacial so that main wont die.
 	initAllConfig();
+	//runCoderTest();
 	cout << "finished MAIN test ---- > "<<endl;
 	return 0;
 }

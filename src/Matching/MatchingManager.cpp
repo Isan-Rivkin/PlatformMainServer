@@ -253,6 +253,12 @@ void MatchingManager::run()
 						refreshUserList();
 						break;
 					}
+					case MAIN_CLIENT_EXIT:
+					{
+						multipleListener->pullOut(peer)->close();
+						refreshUserList();
+						break;
+					}
 					default:
 					{
 						cout <<"[Matcher:] unrecognized command " << command<<endl;

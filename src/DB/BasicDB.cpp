@@ -46,18 +46,31 @@ bool BasicDB::isEntityExist(string table_name,const Entity* entity)
 	}
 	return false;
 }
+bool BasicDB::isNameExist(string table_name, const Entity* entity) {
+	vector<Entity*> entities = getAllTable(table_name);
+	for(size_t i=0;i<entities.size();++i)
+	{
+		if(entities[i]->getParams()[0] == entity->getParams()[0])
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool BasicDB::isEntityExist(const Entity* entity)
 {
 	return isEntityExist(instance_table, entity);
 }
 Entity* BasicDB::getEntity(string table_name, string id)
 {
+	cout <<"[ERROR ERROR ERROR ] BasicDB: getEntity method not implemented!" <<endl;
 	return NULL;
 }
 
 void BasicDB::initTable(string name, string path)
 {
-
+	BasicDB::initTable(name, path);
 }
 
 void BasicDB::addToTable(string table_name,const Entity* entity)
@@ -99,6 +112,7 @@ void BasicDB::deleteFromTable(string table_name, const Entity *entity)
 		it++;
 	}
 }
+
 
 void BasicDB::deleteFromTable(const Entity* entity)
 {

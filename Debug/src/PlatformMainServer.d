@@ -28,7 +28,9 @@ src/PlatformMainServer.o: ../src/PlatformMainServer.cpp \
  ../src/BusyManagerModule/../SDKUtils/MiniHashMap.h \
  ../src/BusyManagerModule/HighScoresLogic.h ../src/DB/AbstractDB.h \
  ../src/DB/BasicDB.h ../src/DB/AbstractDB.h ../src/DB/Entity.h \
- ../src/DB/../SDKUtils/SDKUtils.h ../src/DB/Entity.h
+ ../src/DB/../SDKUtils/SDKUtils.h ../src/DB/Entity.h ../src/DB/LoginDB.h \
+ ../src/DB/BasicDB.h ../src/DB/../Coder/EntitityCoder.h \
+ ../src/DB/../Coder/../DB/Entity.h ../src/Coder/EntitityCoder.h
 
 /home/user/Desktop/eclipse_ws_eliav/lab32/Utils/src/TCPSocket.h:
 
@@ -119,3 +121,13 @@ src/PlatformMainServer.o: ../src/PlatformMainServer.cpp \
 ../src/DB/../SDKUtils/SDKUtils.h:
 
 ../src/DB/Entity.h:
+
+../src/DB/LoginDB.h:
+
+../src/DB/BasicDB.h:
+
+../src/DB/../Coder/EntitityCoder.h:
+
+../src/DB/../Coder/../DB/Entity.h:
+
+../src/Coder/EntitityCoder.h:

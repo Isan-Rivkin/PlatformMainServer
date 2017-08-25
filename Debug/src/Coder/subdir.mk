@@ -4,26 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/DB/AbstractDB.cpp \
-../src/DB/BasicDB.cpp \
-../src/DB/Entity.cpp \
-../src/DB/LoginDB.cpp 
+../src/Coder/EntitityCoder.cpp 
 
 OBJS += \
-./src/DB/AbstractDB.o \
-./src/DB/BasicDB.o \
-./src/DB/Entity.o \
-./src/DB/LoginDB.o 
+./src/Coder/EntitityCoder.o 
 
 CPP_DEPS += \
-./src/DB/AbstractDB.d \
-./src/DB/BasicDB.d \
-./src/DB/Entity.d \
-./src/DB/LoginDB.d 
+./src/Coder/EntitityCoder.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-src/DB/%.o: ../src/DB/%.cpp
+src/Coder/%.o: ../src/Coder/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ -I"/home/user/Desktop/eclipse_ws_eliav/lab32/Utils/src" -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"

@@ -58,6 +58,11 @@ void BusyManager::run()
 					_pairs.push_back(pair);
 					break;
 				}
+				case MAIN_CLIENT_EXIT:
+				{
+					multipleListener->pullOut(peer)->close();
+					break;
+				}
 				case BUSY_REQ_HS:
 				{
 					break;

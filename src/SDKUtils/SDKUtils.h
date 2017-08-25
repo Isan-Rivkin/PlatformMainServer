@@ -7,19 +7,19 @@
 
 #ifndef SDKUTILS_SDKUTILS_H_
 #define SDKUTILS_SDKUTILS_H_
+#include <iostream>
+#include <stdio.h>      /* printf, scanf, puts, NULL */
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
+#include <sstream>
+#include <string>
 #include <strings.h>
 #include <string.h>
-#include <string>
-#include <iostream>
 #include <vector>
 #include "../Protocol.h"
 #include "../DB/Entity.h"
 #include "TCPSocket.h"
 /* rand example: guess the number */
-#include <stdio.h>      /* printf, scanf, puts, NULL */
-#include <stdlib.h>     /* srand, rand */
-#include <time.h>       /* time */
-#include <sstream>
 
 using namespace std;
 namespace networkingLab

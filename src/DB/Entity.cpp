@@ -10,22 +10,39 @@
 
 namespace networkingLab
 {
-Entity::Entity(const string& id):id(id){}
-
-Entity::Entity(const string& id, const vector<string> oParams):id(id),params(oParams){}
-
-void Entity::setParams(vector<string> oParams)
+networkingLab::Entity::Entity(const string& id)
 {
-	vector<string>::iterator it = oParams.begin();
-	while(it != params.end())
-	{
-		string p =*(it);
-		this->params.push_back(p);
-		it++;
-	}
+	this->id = id;
 }
 
-vector<string> Entity::getParams() const
+
+networkingLab::Entity::Entity(const string& id, const vector<string> oParams)
+{
+	this->id = id;
+	this->params = oParams;
+}
+
+void networkingLab::Entity::setParams(vector<string> oParams)
+{
+	if(params.size()!=0)
+	{
+		params.clear();
+	}
+	for(size_t i=0;i<oParams.size();++i)
+	{
+		this->params.push_back(oParams[i]);
+	}
+//	vector<string>::iterator it = oParams.begin();
+//	while(it != params.end())
+//	{
+//			string p ="";
+//			p+=*(it);
+//			this->params.push_back(p);
+//		it++;
+//	}
+}
+
+vector<string> networkingLab::Entity::getParams() const
 {
 	return this->params;
 }
@@ -49,5 +66,4 @@ bool networkingLab::Entity::equals(const Entity* other)
 Entity::~Entity(){}
 
 } /* namespace networkingLab */
-
 
