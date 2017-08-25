@@ -29,6 +29,7 @@ public:
 	virtual const MiniHashMap& addKey(const string& key);
 	virtual bool contains(const string& key)const;
 	virtual vector<string> getAllKeys();
+	virtual bool removeKey(const string key);
 };
 
 } /* namespace networkingLab */

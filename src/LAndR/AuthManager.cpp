@@ -12,6 +12,7 @@ namespace networkingLab {
 AuthManager::AuthManager(HandlerManager * oHandler,AbstractDB * oDB_users)
 :handler(oHandler),keepRunning(false),first_time(true)
 {
+	_sessions_map = new MiniHashMap();
 	db_users = oDB_users;
 	db_users->loadConfig();
 	userInQueue = NULL;
@@ -66,7 +67,7 @@ void AuthManager::run()
 				Entity * registrant = new Entity("",params);
 				User * tryUser = dynamic_cast<User*>(peer);
 				if(tryUser == NULL)
-					cout << "[L&M:] ERROR CANNOT CONVERT USER "<<endl;
+					cout << "[L&R:] ERROR CANNOT CONVERT USER "<<endl;
 				// process user to next state:
 
 				// existing user name or password - X
@@ -117,12 +118,17 @@ void AuthManager::run()
 				// process user to next state:
 				if(db_users->isEntityExist(registrant))
 				{
-					// send ack to user
-					string users_port = utils.toString(user.port);
-					utils.sendCommand(peer, AUTH_ACK_LOGIN, users_port.c_str());
-					tryUser->setUserDetails(user);
-					handler->update(peer, AUTH_ID);
-					multipleListener->pullOut(peer);
+					if(_sessions_map->getAllKeys().size()==0 || !_sessions_map->contains(user.name))
+					{
+						// keep session record
+						_sessions_map->addKey(user.name);
+						// send ack to user
+						string users_port = utils.toString(user.port);
+						utils.sendCommand(peer, AUTH_ACK_LOGIN, users_port.c_str());
+						tryUser->setUserDetails(user);
+						handler->update(peer, AUTH_ID);
+						multipleListener->pullOut(peer);
+					}
 
 				}
 				else
@@ -181,4 +187,9 @@ bool AuthManager::isUserExist(vector<string> user_details)
 
 }
 
+void AuthManager::deleteSessionUser(const string session_name)
+{
+	_sessions_map->removeKey(session_name);
+}
 } /* namespace networkingLab */
+

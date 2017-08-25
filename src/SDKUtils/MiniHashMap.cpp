@@ -44,4 +44,20 @@ vector<string> MiniHashMap::getAllKeys()
 	return keys;
 }
 
+bool networkingLab::MiniHashMap::removeKey(const string key)
+{
+	vector<string>::iterator it = keys.begin();
+	while(it != keys.end())
+	{
+		if((*it) == key)
+		{
+			keys.erase(it);
+			return true;
+		}
+		it++;
+	}
+	return false;
+}
+
 } /* namespace networkingLab */
+

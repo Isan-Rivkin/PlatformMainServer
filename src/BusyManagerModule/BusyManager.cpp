@@ -60,6 +60,9 @@ void BusyManager::run()
 				}
 				case MAIN_CLIENT_EXIT:
 				{
+					User* tryUSer = dynamic_cast<User*>(peer);
+					string name_to_delete = tryUSer->getUserDetails().name;
+					handler->updateDeleteSession(name_to_delete);
 					multipleListener->pullOut(peer)->close();
 					break;
 				}

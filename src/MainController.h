@@ -45,6 +45,7 @@ private:
 		virtual void update(const string & query);
 		virtual void update(TCPSocket * peer, int protocol_id, int protocol_specific);
 		virtual void updateTupple(TCPSocket * peerA,TCPSocket * peerB ,int protocol_id, int protocol_specific);
+		virtual void updateDeleteSession(const string peer_name);
 	public:
 	// operational methods
 		virtual void startController();

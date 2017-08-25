@@ -550,15 +550,17 @@ bool initAllConfig()
 	// server initialization
 	SDKUtils utils;
 
-	int p1 = utils.generateRandom(2500, 9000);
-	MAIN_PORT = (size_t)p1;
+//	int p1 = utils.generateRandom(2500, 9000);
+//	MAIN_PORT = (size_t)p1;
 	MainController * handler = new MainController(SERVER_PORT);
 	Listener * listener = new Listener(SERVER_PORT,handler);
 	EntitityCoder * coder= new EntitityCoder();
-	LoginDB * db = new LoginDB(coder,"src/DB/config.txt");
+	//LoginDB * db = new LoginDB(coder,"src/DB/config.txt");
+	LoginDB * db = new LoginDB(coder,"config.txt");
 	AuthManager * authenticator = new AuthManager(handler,db);
 	MatchingManager * matcher = new MatchingManager(handler);
-	BasicDB * db_hs = new BasicDB("src/DB/hs_config.txt");
+	//BasicDB * db_hs = new BasicDB("src/DB/hs_config.txt");
+	BasicDB * db_hs = new BasicDB("hs_config.txt");
 	BusyManager * busy = new BusyManager(handler,db_hs);
 	handler->initListener(listener);
 	handler->initAuthenthicator(authenticator);

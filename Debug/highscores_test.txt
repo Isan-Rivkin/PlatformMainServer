@@ -125,5 +125,7 @@ isan,1
 hake,0
 hake,1
 isan,0
-isan,1
+hake,1
+isan,0
+dana,1
 hake,0

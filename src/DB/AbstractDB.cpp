@@ -24,10 +24,11 @@ void AbstractDB::loadConfig(const string& path)
 {
 	int counter = 0;
 	SDKUtils utils;
-	char buffer[50000];
-	size_t bytes = this->configManager->read(buffer, 50000);
+	size_t buff_size = 5000;
+	char buffer[buff_size];
+	size_t bytes = this->configManager->read(buffer, buff_size);
 	buffer[bytes] = '\0';
-	vector<Entity*> configs = utils.extractAllEntities(buffer, bytes);
+	vector<Entity*> configs = utils.extractAllEntities(buffer, strlen(buffer));
 	// parse names
 	for(size_t i =0; i<configs.size(); ++i)
 	{
@@ -39,7 +40,6 @@ void AbstractDB::loadConfig(const string& path)
 			if(counter == 0){instance_table = route_name.first;counter++;}
 		}
 	}
-	//instance_table =
 }
 void AbstractDB::loadConfig()
 {

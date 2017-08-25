@@ -11,7 +11,8 @@ src/PlatformMainServer.o: ../src/PlatformMainServer.cpp \
  /home/user/Desktop/eclipse_ws_eliav/lab32/Utils/src/TCPSocket.h \
  ../src/LAndR/../HandlerManager.h ../src/LAndR/../Protocol.h \
  ../src/LAndR/../User.h ../src/LAndR/../SDKUtils/SDKUtils.h \
- ../src/LAndR/../DB/AbstractDB.h ../src/LAndR/../DB/Entity.h \
+ ../src/LAndR/../SDKUtils/MiniHashMap.h ../src/LAndR/../DB/AbstractDB.h \
+ ../src/LAndR/../DB/Entity.h \
  /home/user/Desktop/eclipse_ws_eliav/lab32/Utils/src/File.h \
  ../src/LAndR/../DB/../SDKUtils/SDKUtils.h ../src/LAndR/../DB/Entity.h \
  ../src/Matching/MatchingManager.h ../src/Matching/../HandlerManager.h \
@@ -69,6 +70,8 @@ src/PlatformMainServer.o: ../src/PlatformMainServer.cpp \
 ../src/LAndR/../User.h:
 
 ../src/LAndR/../SDKUtils/SDKUtils.h:
+
+../src/LAndR/../SDKUtils/MiniHashMap.h:
 
 ../src/LAndR/../DB/AbstractDB.h:
 

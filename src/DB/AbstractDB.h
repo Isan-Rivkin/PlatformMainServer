@@ -7,11 +7,10 @@
 
 #ifndef ABSTRACTDB_H_
 #define ABSTRACTDB_H_
-
-#include "Entity.h"
 #include <vector>
 #include <iostream>
 #include <string.h>
+#include "Entity.h"
 #include <strings.h>
 #include "File.h"
 #include "../SDKUtils/SDKUtils.h"

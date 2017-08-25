@@ -21,11 +21,12 @@ vector<Entity*> BasicDB::getAllTable(const string& table_name) {
 	SDKUtils utils;
 	vector<Entity*> ret;
 	File * reader = new File(table_name);
-	char buffer[50000];
-	int bytes = reader->read(buffer, 50000);
+	size_t buff_size = 5000;
+	char buffer[buff_size];
+	int bytes = reader->read(buffer, buff_size);
 	 buffer[bytes] = '\0';
 	//ret = utils.extractAllEntities(buffer, strlen(buffer));
-	ret = utils.extractAllEntities(buffer, bytes);
+	ret = utils.extractAllEntities(buffer, strlen(buffer));
 	return ret;
 }
 
@@ -47,7 +48,7 @@ bool BasicDB::isEntityExist(string table_name,const Entity* entity)
 	return false;
 }
 bool BasicDB::isNameExist(string table_name, const Entity* entity) {
-	vector<Entity*> entities = getAllTable(table_name);
+	vector<Entity*> entities =BasicDB::getAllTable(table_name);
 	for(size_t i=0;i<entities.size();++i)
 	{
 		if(entities[i]->getParams()[0] == entity->getParams()[0])

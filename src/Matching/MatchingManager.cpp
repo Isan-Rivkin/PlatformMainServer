@@ -249,12 +249,18 @@ void MatchingManager::run()
 					case MATCH_USER_EXIT:
 					{
 						multipleListener->pullOut(peer);
+						User * tryUser = dynamic_cast<User*>(peer);
+						string name_to_delete = tryUser->getUserDetails().name;
+						handler->updateDeleteSession(name_to_delete);
 						peer->close();
 						refreshUserList();
 						break;
 					}
 					case MAIN_CLIENT_EXIT:
 					{
+						User * tryUser = dynamic_cast<User*>(peer);
+						string name_to_delete = tryUser->getUserDetails().name;
+						handler->updateDeleteSession(name_to_delete);
 						multipleListener->pullOut(peer)->close();
 						refreshUserList();
 						break;

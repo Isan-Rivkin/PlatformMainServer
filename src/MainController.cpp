@@ -125,6 +125,10 @@ void MainController::initMatcher(MatchingManager* oManager)
 void MainController::stop() {
 }
 
+void MainController::updateDeleteSession(const string peer_name)
+{
+	authenthicator->deleteSessionUser(peer_name);
+}
 
 void MainController::run() {
 		listener->start();

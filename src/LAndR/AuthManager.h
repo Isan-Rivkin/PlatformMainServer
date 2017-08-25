@@ -7,24 +7,28 @@
 
 #ifndef LANDR_AUTHMANAGER_H_
 #define LANDR_AUTHMANAGER_H_
+#include <stdio.h>
+#include <arpa/inet.h>
+
+#include <iostream>
+#include "string.h"
+#include "strings.h"
+#include <vector>
+
 #include "MultipleTCPSocketsListener.h"
 #include "../HandlerManager.h"
 #include "MThread.h"
 #include "../Protocol.h"
 #include "TCPSocket.h"
 #include "../User.h"
-#include <iostream>
-#include "string.h"
-#include "strings.h"
-#include <vector>
+
 //utils
 #include "../SDKUtils/SDKUtils.h"
+#include "../SDKUtils/MiniHashMap.h"
 // db
 #include "../DB/AbstractDB.h"
 #include "../DB/Entity.h"
 
-#include <stdio.h>
-#include <arpa/inet.h>
 
 using namespace std;
 namespace networkingLab
@@ -39,12 +43,15 @@ private:
 	TCPSocket * interrupt_socket;
 	TCPSocket * userInQueue;
 	 AbstractDB * db_users;
+	 MiniHashMap * _sessions_map;
 public:
 	AuthManager(HandlerManager * oHandler,AbstractDB * oDB_users);
 	virtual ~AuthManager();
 	virtual void run();
 	// handler new user
 	void handle(TCPSocket * socket);
+	// delete user from session list
+	void deleteSessionUser(const string session_name);
 	// interruption related
 	void setInterrupter(TCPSocket * oInterrupter);
 	void interrupt();
