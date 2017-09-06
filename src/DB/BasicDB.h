@@ -28,6 +28,7 @@ public:
 		virtual bool isEntityExist(string table_name,const Entity* entity);
 		virtual bool isNameExist(string table_name,const Entity* entity);
 		virtual bool isEntityExist(const Entity *entity);
+		virtual bool isValidatedAllParams(const Entity* entity);
 		virtual Entity* getEntity(string table_name,string id);
 	/**
 	 * WRITE operations

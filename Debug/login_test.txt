@@ -6,3 +6,11 @@ bruce,8ik
 david,8ik
 hake,8ik
 player_soccer,8ik
+manly,wngwn
+womanly,2bsb2
+theGreat,8ik
+hsTest,8ik
+berlin,8ik
+arnold,8ik
+cppChamp,8ik
+eliav,8ik

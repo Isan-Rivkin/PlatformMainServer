@@ -31,6 +31,7 @@ public:
 	 */
 		virtual vector<Entity*> getAllTable();
 		virtual bool isEntityExist(const Entity *entity);
+		virtual bool isValidatedAllParams(const Entity* entity);
 	/**
 	 * WRITE operations
 	 */

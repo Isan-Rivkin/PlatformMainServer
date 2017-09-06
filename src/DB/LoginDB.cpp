@@ -72,5 +72,11 @@ void LoginDB::deleteFromTable(const Entity* entity) {
 	Entity * newEnt = new Entity("",entity->getParams());
 	BasicDB::deleteFromTable(coder->encodeEntity(newEnt));
 }
-
+bool LoginDB::isValidatedAllParams(const Entity* entity)
+{
+	Entity * newEnt = new Entity("",entity->getParams());
+	BasicDB::isValidatedAllParams(coder->encodeEntity(newEnt));
+}
 } /* namespace networkingLab */
+
+

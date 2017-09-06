@@ -63,6 +63,10 @@ bool BasicDB::isEntityExist(const Entity* entity)
 {
 	return isEntityExist(instance_table, entity);
 }
+bool BasicDB::isValidatedAllParams(const Entity* entity)
+{
+	return isEntityExist(instance_table,entity);
+}
 Entity* BasicDB::getEntity(string table_name, string id)
 {
 	cout <<"[ERROR ERROR ERROR ] BasicDB: getEntity method not implemented!" <<endl;

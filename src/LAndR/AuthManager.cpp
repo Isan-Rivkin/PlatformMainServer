@@ -116,10 +116,10 @@ void AuthManager::run()
 				if(tryUser == NULL)
 					cout << "[L&M:] ERROR CANNOT CONVERT USER "<<endl;
 				// process user to next state:
-				if(db_users->isEntityExist(registrant))
+				if(db_users->isValidatedAllParams(registrant) &&
+						(_sessions_map->getAllKeys().size()==0
+								|| !_sessions_map->contains(user.name)))
 				{
-					if(_sessions_map->getAllKeys().size()==0 || !_sessions_map->contains(user.name))
-					{
 						// keep session record
 						_sessions_map->addKey(user.name);
 						// send ack to user
@@ -128,8 +128,6 @@ void AuthManager::run()
 						tryUser->setUserDetails(user);
 						handler->update(peer, AUTH_ID);
 						multipleListener->pullOut(peer);
-					}
-
 				}
 				else
 				{
